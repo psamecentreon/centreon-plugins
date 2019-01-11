@@ -1,3 +1,28 @@
+2018-31-10 Colin Gagnaire <cgagnaire@centreon.com>
+ * Plugin added: Prometheus for cAdvisor (PR #1199)
+ * Plugin added: Axis Video SNMP (PR #1196)
+ * Mode added: [prometheus] 'expression' (PR #1205)
+ * Enhancement: [prometheus] target status mode filtering (PR #1206, #1207)
+ * Enhancement: [prometheus/nodeexporter] nodeexporter filtering (PR #1201)
+ * Enhancement: [prometheus/kubernetes] kubernetes filtering (PR #1197, #1200)
+ * Enhancement: [azure] add subscription option (PR #1189)
+ * Enhancement: [prometheus/api] enh prometheus timeframe/step options (PR #1190)
+ * Fix: [idrac/pdisk] fix typo in long outputs (PR #1194)
+ * Fix: [netapp/qtreeusage] fix qtreeusage mode thresholds (#1193, PR #1195)
+ * Fix: [hyperv2012/nodesnapshot] fix negative timestamp (PR #1192)
+ * Break: [masterclock/ntp] change masterclock plugin path (PR #1191)
+
+2018-19-10 Colin Gagnaire <cgagnaire@centreon.com>
+ * Plugin added: Prometheus (PR #1168, #1169)
+ * Plugin added: Prometheus for Node Exporter (PR #1168, #1169, #1179)
+ * Plugin added: Prometheus for Kubernetes (PR #1181)
+ * Plugin added: Masterclock NTP GPS (PR #1182)
+ * Plugin added: Moxa EDS/IKS switches (PR #1183)
+ * Enhancement: [counter] add type 3 (instances of instances) (PR #1167, #1178)
+ * Fix: [cloud/azure] fix azure plugin typos, helpers and other (PR #1159)
+ * Fix: [hyperv/nodesnapshot] bug with comma on french Windows OS (PR #1175)
+ * Fix: [slack/alert] host and service not printed (PR #1177)
+
 2018-09-28 Colin Gagnaire <cgagnaire@centreon.com>
  * Plugin added: Huawei iBMC (PR #1098, #1108, #1112, #1114)
  * Plugin added: Huawei HMM (PR #1098, #1113)

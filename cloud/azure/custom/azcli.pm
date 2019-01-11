@@ -42,6 +42,10 @@ sub new {
     if (!defined($options{noptions})) {
         $options{options}->add_options(arguments => 
                     {
+                        "subscription:s"      => { name => 'subscription' },
+                        "tenant:s"            => { name => 'tenant' },
+                        "client-id:s"         => { name => 'client_id' },
+                        "client-secret:s"     => { name => 'client_secret' },
                         "timeframe:s"         => { name => 'timeframe' },
                         "interval:s"          => { name => 'interval' },
                         "aggregation:s@"      => { name => 'aggregation' },
@@ -101,6 +105,8 @@ sub check_options {
         }
     }
 
+    $self->{subscription} = (defined($self->{option_results}->{subscription})) ? $self->{option_results}->{subscription} : undef;
+
     return 0;
 }
 
@@ -112,7 +118,8 @@ sub azure_get_metrics_set_cmd {
     my $cmd_options = "monitor metrics list --metrics '" . join('\' \'', @{$options{metrics}}) . "' --start-time $options{start_time} --end-time $options{end_time} " .
         "--interval $options{interval} --aggregation '" . join('\' \'', @{$options{aggregations}}) . "' --output json --resource '$options{resource}' " .
         "--resource-group '$options{resource_group}' --resource-type '$options{resource_type}' --resource-namespace '$options{resource_namespace}'";
-        
+    $cmd_options .= " --subscription '$self->{subscription}'" if (defined($self->{subscription}) && $self->{subscription} ne '');
+    
     return $cmd_options; 
 }
 
@@ -188,7 +195,8 @@ sub azure_list_resources_set_cmd {
     my $cmd_options = "resource list --namespace '$options{namespace}' --resource-type '$options{resource_type}' --output json";
     $cmd_options .= " --location '$options{location}'" if (defined($options{location}) && $options{location} ne '');
     $cmd_options .= " --resource-group '$options{resource_group}'" if (defined($options{resource_group}) && $options{resource_group} ne '');
-        
+    $cmd_options .= " --subscription '$self->{subscription}'" if (defined($self->{subscription}) && $self->{subscription} ne '');
+    
     return $cmd_options; 
 }
 
@@ -217,7 +225,7 @@ sub azure_list_resources {
         $self->{output}->add_option_msg(short_msg => "Cannot decode json response: $@");
         $self->{output}->option_exit();
     }
-        
+    
     return $raw_results;
 }
 
@@ -227,6 +235,7 @@ sub azure_list_vm_sizes_set_cmd {
     return if (defined($self->{option_results}->{command_options}) && $self->{option_results}->{command_options} ne '');
     
     my $cmd_options = "vm list-sizes --location '$options{location}' --output json";
+    $cmd_options .= " --subscription '$self->{subscription}'" if (defined($self->{subscription}) && $self->{subscription} ne '');
         
     return $cmd_options; 
 }
@@ -256,7 +265,7 @@ sub azure_list_vm_sizes {
         $self->{output}->add_option_msg(short_msg => "Cannot decode json response: $@");
         $self->{output}->option_exit();
     }
-        
+    
     return $raw_results;
 }
 
@@ -268,7 +277,8 @@ sub azure_list_vms_set_cmd {
     my $cmd_options = "vm list --output json";
     $cmd_options .= " --resource-group '$options{resource_group}'" if (defined($options{resource_group}) && $options{resource_group} ne '');
     $cmd_options .= " --show-details" if (defined($options{show_details}));
-        
+    $cmd_options .= " --subscription '$self->{subscription}'" if (defined($self->{subscription}) && $self->{subscription} ne '');
+
     return $cmd_options; 
 }
 
@@ -297,7 +307,7 @@ sub azure_list_vms {
         $self->{output}->add_option_msg(short_msg => "Cannot decode json response: $@");
         $self->{output}->option_exit();
     }
-        
+    
     return $raw_results;
 }
 
@@ -307,7 +317,8 @@ sub azure_list_groups_set_cmd {
     return if (defined($self->{option_results}->{command_options}) && $self->{option_results}->{command_options} ne '');
     
     my $cmd_options = "group list --output json";
-        
+    $cmd_options .= " --subscription '$self->{subscription}'" if (defined($self->{subscription}) && $self->{subscription} ne '');
+    
     return $cmd_options; 
 }
 
@@ -336,7 +347,7 @@ sub azure_list_groups {
         $self->{output}->add_option_msg(short_msg => "Cannot decode json response: $@");
         $self->{output}->option_exit();
     }
-        
+    
     return $raw_results;
 }
 
@@ -346,7 +357,8 @@ sub azure_list_deployments_set_cmd {
     return if (defined($self->{option_results}->{command_options}) && $self->{option_results}->{command_options} ne '');
     
     my $cmd_options = "group deployment list --resource-group '$options{resource_group}' --output json";
-        
+    $cmd_options .= " --subscription '$self->{subscription}'" if (defined($self->{subscription}) && $self->{subscription} ne '');
+    
     return $cmd_options; 
 }
 
@@ -375,7 +387,7 @@ sub azure_list_deployments {
         $self->{output}->add_option_msg(short_msg => "Cannot decode json response: $@");
         $self->{output}->option_exit();
     }
-        
+    
     return $raw_results;
 }
 
@@ -387,24 +399,33 @@ __END__
 
 Microsoft Azure CLI
 
-=head1 SYNOPSIS
+=head1 AZCLI OPTIONS
 
 Microsoft Azure CLI 2.0
 
 To install the Azure CLI 2.0 in a CentOS/RedHat environment :
+
 (As root)
+
 # rpm --import https://packages.microsoft.com/keys/microsoft.asc
+
 # sh -c 'echo -e "[azure-cli]\nname=Azure CLI\nbaseurl=https://packages.microsoft.com/yumrepos/azure-cli\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/azure-cli.repo'
+
 # yum install azure-cli
+
 (As centreon-engine)
+
 # az login
+
 Go to https://aka.ms/devicelogin and enter the code given by the last command.
 
 For futher informations, visit https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest.
 
-=head1 AZCLI OPTIONS
-
 =over 8
+
+=item B<--subscription>
+
+Set Azure subscription (Required if logged to several subscriptions).
 
 =item B<--timeframe>
 
@@ -414,9 +435,9 @@ Set timeframe in seconds (i.e. 3600 to check last hour).
 
 Set interval of the metric query (Can be : PT1M, PT5M, PT15M, PT30M, PT1H, PT6H, PT12H, PT24H).
 
-=item B<--aggregations>
+=item B<--aggregation>
 
-Set monitor aggregations (Can be: 'minimum', 'maximum', 'average', 'total').
+Set monitor aggregation (Can be multiple, Can be: 'minimum', 'maximum', 'average', 'total').
 
 =item B<--zeroed>
 
